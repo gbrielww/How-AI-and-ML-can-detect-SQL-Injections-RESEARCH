@@ -1,0 +1,174 @@
+SQL Injection Detection using Machine Learning & FastAPI
+
+This is the final project for [Your Course Name], demonstrating a complete Machine Learning workflow, from data analysis and model training to deployment as a real-time web API.
+
+This project trains and compares four different machine learning models to detect malicious SQL injection (SQLi) attacks, selects the best-performing model, and serves it via a high-speed FastAPI endpoint.
+
+🚀 Key Finding & Model Comparison
+
+The primary goal of this project was to determine the most effective model for classifying SQL queries as either benign (safe) or malicious (an attack).
+
+I tested two main approaches:
+
+Classic ML Models: Using a character-level TF-IDF Vectorizer to capture attack syntax.
+
+Deep Learning Model: Using a 1D Convolutional Neural Network (CNN) to learn word-level patterns.
+
+After training and evaluating all models on an unseen test set, the Random Forest model was the clear winner, outperforming even the more complex Deep Learning model.
+
+Model
+
+Preprocessing
+
+Test Accuracy
+
+Random Forest
+
+TF-IDF (char-level)
+
+✅ 99.68%
+
+Logistic Regression
+
+TF-IDF (char-level)
+
+99.11%
+
+SVM
+
+TF-IDF (char-level)
+
+99.39%
+
+Deep Learning (CNN)
+
+Tokenizer + Embedding
+
+98.79%
+
+The character-level TF-IDF (analyzer='char_wb') proved to be an extremely effective feature extraction technique, allowing the Random Forest model to accurately identify the specific syntax patterns of an attack.
+
+📦 How to Run the Live API (Weeks 9-11 Deliverable)
+
+This repository contains the fully-trained, 99.68% accurate Random Forest model. To run the live detection API on your local machine, please follow these steps.
+
+Prerequisites
+
+Python 3.8+
+
+Step 1: Get the Code
+
+Download or clone this project, then navigate into the sql_api folder.
+
+# Example:
+cd path/to/project/sql_api
+
+
+Step 2: Install Dependencies
+
+This will install FastAPI, the Uvicorn server, and scikit-learn.
+
+# On Windows
+py -m pip install fastapi "uvicorn[standard]" scikit-learn
+
+# On macOS / Linux
+pip3 install fastapi "uvicorn[standard]" scikit-learn
+
+
+Step 3: Run the Server
+
+This command tells Python to run the uvicorn module and load the app object from your api.py file.
+
+# On Windows
+py -m uvicorn api:app --reload
+
+# On macOS / Linux
+uvicorn api:app --reload
+
+
+You should see a confirmation that the server is running and the model is loaded:
+
+✅ Model and vectorizer loaded successfully!
+INFO:     Uvicorn running on [http://127.0.0.1:8000](http://127.0.0.1:8000) (Press CTRL+C to quit)
+
+
+🧪 How to Test the API
+
+The API is now live on your machine. The easiest way to test it is using the built-in documentation page.
+
+Open your web browser and go to: http://127.0.0.1:8000/docs
+
+Click on the /detect endpoint (the green POST bar) to expand it.
+
+Click the "Try it out" button.
+
+Paste one of the following JSON payloads into the request body box and click "Execute".
+
+Malicious Test Queries (Should return prediction: 1)
+
+Tautology / "Always True" Attack:
+
+{
+  "query": "1' or '1'='1"
+}
+
+
+UNION Attack (Steals data):
+
+{
+  "query": "SELECT * FROM products WHERE id = 1 UNION SELECT username, password FROM users"
+}
+
+
+Blind SQLi (Time-based attack):
+
+{
+  "query": "1' AND (SELECT 1 FROM (SELECT(SLEEP(5)))a)--"
+}
+
+
+Batch/Stacked Query (Tries to delete a table):
+
+{
+  "query": "1; DROP TABLE users; --"
+}
+
+
+Benign Test Queries (Should return prediction: 0)
+
+Standard SELECT:
+
+{
+  "query": "SELECT * FROM users WHERE id = 5"
+}
+
+
+Standard INSERT:
+
+{
+  "query": "INSERT INTO logs (level, message) VALUES ('info', 'User logged in')"
+}
+
+
+Standard UPDATE:
+
+{
+  "query": "UPDATE products SET inventory = inventory - 1 WHERE id = 105"
+}
+
+
+🔬 Model Training Process (Weeks 1-8)
+
+All model training and experimentation was done in the included Google Colab notebook (SQL_Injection_Model_Training.ipynb).
+
+Dataset: The SQL Injection Dataset by Sajid576 from Kaggle was used.
+
+Cleaning: The data was loaded using pandas, and all null values and duplicate queries were removed.
+
+Data Split: The dataset was split into an 80% Training set and a 20% Testing set.
+
+Model 1 (Baselines): TF-IDF vectorization (analyzer='char_wb', ngram_range=(3, 5)) was used to convert text to numerical vectors. Logistic Regression, Random Forest, and SVM models were trained on this data.
+
+Model 2 (Deep Learning): A Tokenizer and pad_sequences were used to prepare the data. A 1D Convolutional Neural Network (CNN) was built and trained.
+
+Conclusion: The Random Forest model achieved the highest accuracy (99.68%) on the unseen test set, and was therefore selected for deployment in the API.
