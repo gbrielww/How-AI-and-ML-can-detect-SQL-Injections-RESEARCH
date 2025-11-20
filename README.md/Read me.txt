@@ -1,6 +1,6 @@
 SQL Injection Detection using Machine Learning & FastAPI
 
-This is the final project for [Your Course Name], demonstrating a complete Machine Learning workflow, from data analysis and model training to deployment as a real-time web API.
+This is the final project, demonstrating a complete Machine Learning workflow, from data analysis and model training to deployment as a real-time web API.
 
 This project trains and compares four different machine learning models to detect malicious SQL injection (SQLi) attacks, selects the best-performing model, and serves it via a high-speed FastAPI endpoint.
 
@@ -170,5 +170,6 @@ Data Split: The dataset was split into an 80% Training set and a 20% Testing set
 Model 1 (Baselines): TF-IDF vectorization (analyzer='char_wb', ngram_range=(3, 5)) was used to convert text to numerical vectors. Logistic Regression, Random Forest, and SVM models were trained on this data.
 
 Model 2 (Deep Learning): A Tokenizer and pad_sequences were used to prepare the data. A 1D Convolutional Neural Network (CNN) was built and trained.
+
 
 Conclusion: The Random Forest model achieved the highest accuracy (99.68%) on the unseen test set, and was therefore selected for deployment in the API.
